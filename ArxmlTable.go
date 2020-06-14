@@ -2,11 +2,12 @@ package godecoder
 
 import (
 	"encoding/json"
-	"github.com/kyungseopkim/goarxml"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
 	"path"
+
+	"github.com/kyungseopkim/goarxml"
+	"gopkg.in/yaml.v2"
 )
 
 const mappingTable = "arxml_mapping.yaml"
@@ -21,6 +22,7 @@ type ArxmlVins struct {
 	Default bool     `yaml:"default"`
 	Gps     bool     `yaml:"gps"`
 }
+
 type ArxmlVinMap struct {
 	Arxml []ArxmlVins `yaml:"arxml"`
 }
@@ -61,7 +63,7 @@ func (vinmap ArxmlVinMap) String() string {
 	return ToYaml(vinmap)
 }
 
-func (msgMap MsgMap) FromSeq(msgs []goarxml.Message) {
+func (msgMap MsgMap) FromMessages(msgs []goarxml.Message) {
 	for _, msg := range msgs {
 		msgMap[msg.Id] = msg
 	}
@@ -70,7 +72,7 @@ func (msgMap MsgMap) FromSeq(msgs []goarxml.Message) {
 func (dbc ArxmlMap) FromResource(arxmlMap ArxmlVinMap, resource string) {
 	for _, arxml := range arxmlMap.Arxml {
 		msgMap := make(MsgMap)
-		msgMap.FromSeq(arxml.GetMsg(resource))
+		msgMap.FromMessages(arxml.GetMsg(resource))
 		dbc[arxml.Ver] = msgMap
 	}
 }
@@ -120,3 +122,5 @@ var (
 func ArxmlLoad(resource string) {
 	Vin2Ver, Ver2Arxml = GetMappingTables(resource)
 }
+
+type DbcLookup 

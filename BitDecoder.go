@@ -33,7 +33,7 @@ func (decoder BitDecoder) GetValue() float32 {
         startBit = 64 - startBit - decoder.Signal.Length
     }
     data := NewBitset()
-    data.From(decoder.Data[startByte:last])
+    data.From(unit)
     value := data.GetRange(startBit, decoder.Signal.Length)
 
     return (float32(value.ToUint64()) * decoder.Signal.Slope) + decoder.Signal.Intercept

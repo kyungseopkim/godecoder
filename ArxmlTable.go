@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "io/ioutil"
     "log"
+    "math"
     "path"
     yaml "gopkg.in/yaml.v2"
     "github.com/kyungseopkim/goarxml"
@@ -64,6 +65,7 @@ func (vinmap ArxmlVinMap) String() string {
 
 func (msgMap MsgMap) FromMessages(msgs []goarxml.Message) {
     for _, msg := range msgs {
+        msg.SortByStartbit()
         msgMap[msg.Id] = msg
     }
 }
@@ -72,6 +74,7 @@ func (dbc ArxmlMap) FromResource(arxmlMap ArxmlVinMap, resource string) {
     for _, arxml := range arxmlMap.Arxml {
         msgMap := make(MsgMap)
         msgMap.FromMessages(arxml.GetMsg(resource))
+
         dbc[arxml.Ver] = msgMap
     }
 }
@@ -112,15 +115,21 @@ func GetMappingTables(resources string) (VinMap, ArxmlMap, MsgMap) {
     arxmlMap.FromResource(arxml, resources)
 
     var defaultArxmlVer int32 = 0
-
+    var lowest int32 = math.MaxInt32
     for _, arxml := range arxml.Arxml {
+        if arxml.Ver < lowest {
+            lowest = arxml.Ver
+        }
     	if arxml.Default {
     		defaultArxmlVer = arxml.Ver
     		break
 	    }
     }
 
-    defaultMap, _ := arxmlMap[defaultArxmlVer]
+    defaultMap, ok := arxmlMap[defaultArxmlVer]
+    if !ok {
+        defaultMap, _ = arxmlMap[lowest]
+    }
     return vinMap, arxmlMap, defaultMap
 }
 

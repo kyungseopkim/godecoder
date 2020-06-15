@@ -19,10 +19,8 @@ func reverseByteArray(data []byte) []byte {
 }
 
 func (decoder BitDecoder) GetValue() float32 {
-    idx := decoder.Signal.StartBit / 64
-    startByte := idx * 8
-    sliceStart := startByte * 8
-    var startBit  = decoder.Signal.StartBit - sliceStart
+    startByte := decoder.Signal.StartBit >> 3
+    var startBit  = decoder.Signal.StartBit - (startByte * 8)
     last := startByte+8
     if int(last) > len(decoder.Data) {
         last = int32(len(decoder.Data))

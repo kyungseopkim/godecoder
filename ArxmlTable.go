@@ -80,12 +80,12 @@ func (dbc ArxmlMap) FromResource(arxmlMap ArxmlVinMap, resource string) {
 }
 
 func (vins ArxmlVins) GetMsg(resource string) []goarxml.Message {
-    fileName := path.Join(resource, vins.Name)
+    fileName := path.Join(resource, "arxml", vins.Name)
     return goarxml.Parse(fileName)
 }
 
 func readArxmlVinsFromFile(filePath string) ArxmlVinMap {
-    tablePath := path.Join(filePath, mappingTable)
+    tablePath := path.Join(filePath, "arxml", mappingTable)
     bytes, err := ioutil.ReadFile(tablePath)
     if err != nil {
         log.Fatalln(err)

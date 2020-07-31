@@ -8,6 +8,7 @@ import (
     "path"
     yaml "gopkg.in/yaml.v2"
     "github.com/kyungseopkim/goarxml"
+    "strconv"
 )
 
 const mappingTable = "arxml_mapping.yaml"
@@ -17,7 +18,7 @@ type MsgMap map[int32]goarxml.Message
 type ArxmlMap map[int32]MsgMap
 type ArxmlVins struct {
     Name    string   `yaml:"name"`
-    Ver     int32    `yaml:"version"`
+    Ver     string   `yaml:"version"`
     Vin     []string `yaml:"vin"`
     Default bool     `yaml:"default"`
     Gps     bool     `yaml:"gps"`
@@ -74,8 +75,8 @@ func (dbc ArxmlMap) FromResource(arxmlMap ArxmlVinMap, resource string) {
     for _, arxml := range arxmlMap.Arxml {
         msgMap := make(MsgMap)
         msgMap.FromMessages(arxml.GetMsg(resource))
-
-        dbc[arxml.Ver] = msgMap
+        ver, _ := strconv.ParseInt(arxml.Ver, 10, 32)
+        dbc[int32(ver)] = msgMap
     }
 }
 
@@ -101,8 +102,8 @@ func readArxmlVinsFromFile(filePath string) ArxmlVinMap {
 func (vinmap VinMap) GetFromArxmlVins(vins ArxmlVinMap) {
     for _, arxml := range vins.Arxml {
         for _, vin := range arxml.Vin {
-            ver := arxml.Ver
-            vinmap[vin] = ver
+            ver, _ := strconv.ParseInt(arxml.Ver, 10, 32)
+            vinmap[vin] = int32(ver)
         }
     }
 }
@@ -117,11 +118,12 @@ func GetMappingTables(resources string) (VinMap, ArxmlMap, MsgMap) {
     var defaultArxmlVer int32 = 0
     var lowest int32 = math.MaxInt32
     for _, arxml := range arxml.Arxml {
-        if arxml.Ver < lowest {
-            lowest = arxml.Ver
+        ver, _ := strconv.ParseInt(arxml.Ver, 10, 32)
+        if int32(ver) < lowest {
+            lowest = int32(ver)
         }
     	if arxml.Default {
-    		defaultArxmlVer = arxml.Ver
+    		defaultArxmlVer = int32(ver)
     		break
 	    }
     }

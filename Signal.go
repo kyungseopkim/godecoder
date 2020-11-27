@@ -13,11 +13,11 @@ type MessageSignal struct {
 	Vlan       string  `json:"vlan"`
 	MsgName    string  `json:"msg_name"`
 	SignalName string  `json:"signal_name"`
-	Value      float32 `json:"value"`
+	Value      float64 `json:"value"`
 }
 
 // NewMessagSignal return new MessageSignal
-func NewMessageSignal(msgId int32, timestamp int64, epoch int32, vin string, vlan string, msgName string, signalName string, value float32) *MessageSignal {
+func NewMessageSignal(msgId int32, timestamp int64, epoch int32, vin string, vlan string, msgName string, signalName string, value float64) *MessageSignal {
 	return &MessageSignal{MsgId: msgId, Timestamp: timestamp, Epoch: epoch, Vin: vin, Vlan: vlan, MsgName: msgName, SignalName: signalName, Value: value}
 }
 

@@ -18,7 +18,7 @@ func reverseByteArray(data []byte) []byte {
     return append(reverseByteArray(data[1:]), data[0])
 }
 
-func (decoder BitDecoder) GetValue() float32 {
+func (decoder BitDecoder) GetValue() float64 {
     startByte := decoder.Signal.StartBit >> 3
     var startBit  = decoder.Signal.StartBit - (startByte * 8)
     last := startByte+8
@@ -34,6 +34,6 @@ func (decoder BitDecoder) GetValue() float32 {
     data.From(unit)
     value := data.GetRange(startBit, decoder.Signal.Length)
 
-    return (float32(value.ToUint64()) * decoder.Signal.Slope) + decoder.Signal.Intercept
+    return (float64(value.ToUint64()) * decoder.Signal.Slope) + decoder.Signal.Intercept
 }
 

@@ -3,6 +3,7 @@ package godecoder
 import (
 	"encoding/binary"
 	"encoding/hex"
+	"errors"
 )
 
 type Bitset []byte
@@ -11,12 +12,16 @@ func NewBitset() Bitset {
 	return make(Bitset, 8)
 }
 
+func NewBitsetWithSize(size int32) Bitset {
+	return make(Bitset, size)
+}
+
 func (bit Bitset) Set(index int32) {
-	bit[index/8] |= 1 << byte(index%8)
+	bit[index>>3] |= 1 << byte(index%8)
 }
 
 func (bit Bitset) Unset(index int32) {
-	bit[index/8] &= ^(1 << byte(index%8))
+	bit[index>>3] &= ^(1 << byte(index%8))
 }
 
 func (bit Bitset) Sets(indexs ...int32) {
@@ -40,12 +45,17 @@ func (bit Bitset) ToUint64() uint64 {
 }
 
 func (bit Bitset) Get(index int32) byte {
-	return bit[index/8] & (1 << byte(index%8))
+	return bit[index>>3] & (1 << byte(index%8))
 }
 
+
 func (bit Bitset) GetRange(start int32, len int32) Bitset {
-	last := start + len
 	ret := NewBitset()
+	bit.Rearrange(start, start + len, ret)
+	return ret
+}
+
+func (bit Bitset) Rearrange(start int32, last int32, ret Bitset) {
 	var index = int32(0)
 	for i := start; i < last; i++ {
 		if bit.Get(i) != 0 {
@@ -53,5 +63,13 @@ func (bit Bitset) GetRange(start int32, len int32) Bitset {
 		}
 		index++
 	}
-	return ret
+}
+
+func (bit Bitset) GetStringType(start int32, len int32) (error, string) {
+	if len%8 != 0 {
+		return errors.New("invalid alignment"), ""
+	}
+	ret := NewBitsetWithSize(len>>3)
+	bit.Rearrange(start, start+len, ret)
+	return nil, string(ret)
 }

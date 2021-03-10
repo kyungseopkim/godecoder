@@ -23,6 +23,8 @@ func TestBitDecoder_GetValue(t *testing.T) {
         250,
         0,
         "bar",
+        false,
+        "number",
     }
     decorder := NewBitDecoder(data, sig)
     fmt.Println(decorder.GetValue())
@@ -30,6 +32,6 @@ func TestBitDecoder_GetValue(t *testing.T) {
 }
 
 func TestBitset_GetRange(t *testing.T) {
-
+    t.Error("hello")
 
 }

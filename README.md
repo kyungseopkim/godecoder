@@ -4,6 +4,7 @@ decoder by Golang
 
 # history
 <pre>
+v0.1.6  message Signal
 v0.1.5  add dataType
 v0.1.4  float32 -> float64 
 v0.1.3  fixed 

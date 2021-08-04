@@ -55,7 +55,7 @@ func (decoder BitDecoder) normalize() (int32, int32, int32) {
 	startByte := decoder.Signal.StartBit >> 3
 	var startBit = decoder.Signal.StartBit - (startByte * 8)
 	last := startByte + 8
-	if int(last) < len(decoder.Data) {
+	if int(last) > len(decoder.Data) {
 		last = int32(len(decoder.Data))
 	}
 	return startByte, startBit, last

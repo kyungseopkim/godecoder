@@ -48,10 +48,9 @@ func (bit Bitset) Get(index int32) byte {
 	return bit[index>>3] & (1 << byte(index%8))
 }
 
-
 func (bit Bitset) GetRange(start int32, len int32) Bitset {
 	ret := NewBitset()
-	bit.Rearrange(start, start + len, ret)
+	bit.Rearrange(start, start+len, ret)
 	return ret
 }
 
@@ -69,7 +68,7 @@ func (bit Bitset) GetStringType(start int32, len int32) (error, string) {
 	if len%8 != 0 {
 		return errors.New("invalid alignment"), ""
 	}
-	ret := NewBitsetWithSize(len>>3)
+	ret := NewBitsetWithSize((len >> 3) + 1)
 	bit.Rearrange(start, start+len, ret)
 	return nil, string(ret)
 }

@@ -1,8 +1,9 @@
 package godecoder
 
 import (
-	"github.com/kyungseopkim/goarxml"
 	"strings"
+
+	"github.com/kyungseopkim/goarxml"
 )
 
 type BitDecoder struct {
@@ -53,8 +54,13 @@ func (decoder BitDecoder) GetValue() float64 {
 
 func (decoder BitDecoder) normalize() (int32, int32, int32) {
 	startByte := decoder.Signal.StartBit >> 3
-	var startBit = decoder.Signal.StartBit - (startByte * 8)
-	last := startByte + 8
+	startBit := decoder.Signal.StartBit - (startByte * 8)
+	lenthByte := decoder.Signal.Length >> 3
+	if (decoder.Signal.Length % 8) > 0 {
+		lenthByte += 1
+	}
+
+	last := startByte + lenthByte
 	if int(last) > len(decoder.Data) {
 		last = int32(len(decoder.Data))
 	}

@@ -4,6 +4,8 @@ decoder by Golang
 
 # history
 <pre>
+v0.2.0  limit 8 bytes in number type 
+v0.1.9  fix normalize
 v0.1.6  message Signal
 v0.1.5  add dataType
 v0.1.4  float32 -> float64 

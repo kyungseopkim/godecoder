@@ -31,7 +31,14 @@ func (bit Bitset) Sets(indexs ...int32) {
 }
 
 func (bit Bitset) From(data []byte) {
-	for i := 0; i < len(data); i++ {
+	var minSize int = 0
+	if len(data) > len(bit) {
+		minSize = len(bit)
+	} else {
+		minSize = len(data)
+	}
+
+	for i := 0; i < minSize; i++ {
 		bit[i] = data[i]
 	}
 }

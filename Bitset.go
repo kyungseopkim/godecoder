@@ -63,13 +63,12 @@ func (bit Bitset) GetRange(start int32, len int32) Bitset {
 
 func (bit Bitset) Rearrange(start int32, last int32, ret Bitset) {
 	var index = int32(0)
-	var size  = last
 
 	if last > int32(len(bit)) {
-		size = int32(len(bit))
+		last = int32(len(bit))
 	}
 
-	for i := start; i < size; i++ {
+	for i := start; i < last; i++ {
 		if bit.Get(i) != 0 {
 			ret.Set(index)
 		}

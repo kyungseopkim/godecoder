@@ -4,6 +4,7 @@ decoder by Golang
 
 # history
 <pre>
+v0.2.2  multiplexing
 v0.2.1  fix rearrange
 v0.2.0  limit 8 bytes in number type 
 v0.1.9  fix normalize

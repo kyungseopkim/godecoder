@@ -2,19 +2,19 @@ package godecoder
 
 import (
     "encoding/json"
+    "github.com/kyungseopkim/goarxml"
+    yaml "gopkg.in/yaml.v2"
     "io/ioutil"
     "log"
     "math"
     "path"
-    yaml "gopkg.in/yaml.v2"
-    "github.com/kyungseopkim/goarxml"
     "strconv"
 )
 
 const mappingTable = "arxml_mapping.yaml"
 
 type VinMap map[string]int32
-type MsgMap map[int32]goarxml.Message
+type MsgMap map[int32]interface{}
 type ArxmlMap map[int32]MsgMap
 type ArxmlVins struct {
     Name    string   `yaml:"name"`
@@ -64,23 +64,28 @@ func (vinmap ArxmlVinMap) String() string {
     return ToYaml(vinmap)
 }
 
-func (msgMap MsgMap) FromMessages(msgs []goarxml.Message) {
-    for _, msg := range msgs {
-        msg.SortByStartbit()
-        msgMap[msg.Id] = msg
+func (msgs MsgMap) FromMessages(src []interface{}) {
+    for _, item := range src {
+        switch msg := item.(type) {
+        case goarxml.Message:
+            msg.SortByStartbit()
+            msgs[msg.Id] = msg
+        case goarxml.MultiplexMessage:
+            msgs[msg.Id] = msg
+        }
     }
 }
 
-func (dbc ArxmlMap) FromResource(arxmlMap ArxmlVinMap, resource string) {
+func (arxmls ArxmlMap) FromResource(arxmlMap ArxmlVinMap, resource string) {
     for _, arxml := range arxmlMap.Arxml {
         msgMap := make(MsgMap)
         msgMap.FromMessages(arxml.GetMsg(resource))
         ver, _ := strconv.ParseInt(arxml.Ver, 10, 32)
-        dbc[int32(ver)] = msgMap
+        arxmls[int32(ver)] = msgMap
     }
 }
 
-func (vins ArxmlVins) GetMsg(resource string) []goarxml.Message {
+func (vins ArxmlVins) GetMsg(resource string) []interface{} {
     fileName := path.Join(resource, "arxml", vins.Name)
     return goarxml.Parse(fileName)
 }
@@ -99,11 +104,11 @@ func readArxmlVinsFromFile(filePath string) ArxmlVinMap {
     return yamlContents
 }
 
-func (vinmap VinMap) GetFromArxmlVins(vins ArxmlVinMap) {
+func (vin VinMap) GetFromArxmlVins(vins ArxmlVinMap) {
     for _, arxml := range vins.Arxml {
-        for _, vin := range arxml.Vin {
+        for _, vid := range arxml.Vin {
             ver, _ := strconv.ParseInt(arxml.Ver, 10, 32)
-            vinmap[vin] = int32(ver)
+            vin[vid] = int32(ver)
         }
     }
 }
@@ -122,10 +127,10 @@ func GetMappingTables(resources string) (VinMap, ArxmlMap, MsgMap) {
         if int32(ver) < lowest {
             lowest = int32(ver)
         }
-    	if arxml.Default {
-    		defaultArxmlVer = int32(ver)
-    		break
-	    }
+        if arxml.Default {
+            defaultArxmlVer = int32(ver)
+            break
+        }
     }
 
     defaultMap, ok := arxmlMap[defaultArxmlVer]

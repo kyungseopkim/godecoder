@@ -64,8 +64,8 @@ func (bit Bitset) GetRange(start int32, len int32) Bitset {
 func (bit Bitset) Rearrange(start int32, last int32, ret Bitset) {
 	var index = int32(0)
 
-	if last > int32(len(bit)) {
-		last = int32(len(bit))
+	if last > bit.Size() {
+		last = bit.Size()
 	}
 
 	for i := start; i < last; i++ {
@@ -80,7 +80,11 @@ func (bit Bitset) GetStringType(start int32, len int32) (error, string) {
 	if len%8 != 0 {
 		return errors.New("invalid alignment"), ""
 	}
-	ret := NewBitsetWithSize((len >> 3) + 1)
+	ret := NewBitsetWithSize(int32(len >> 3))
 	bit.Rearrange(start, start+len, ret)
 	return nil, string(ret)
+}
+
+func (bit Bitset) Size() int32 {
+	return int32(len(bit) * 8)
 }
